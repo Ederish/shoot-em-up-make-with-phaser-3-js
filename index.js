@@ -76,9 +76,11 @@ function create (){
 
     speed = Phaser.Math.GetSpeed(300, 1);
 
-    // setting gyroscope update frequency
- gyro.frequency = 10;
- // start gyroscope detection
+}
+function update (time, delta){ 
+// setting gyroscope update frequency
+gyro.frequency = 10;
+// start gyroscope detection
 gyro.startTracking(
 
 (o)=>{g=o.gamma/20;
@@ -88,9 +90,6 @@ if(g >0)
 else if
 (g<0)
 {ship.x -= speed * delta;}})
-}
-function update (time, delta){ 
-
     if (cursors.left.isDown){
         ship.x -= speed * delta;
     }
