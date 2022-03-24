@@ -1,4 +1,4 @@
-﻿var config = {
+var config = {
     type: Phaser.AUTO,
     scale:{mode: Phaser.Scale.ENVOLVED,},
     width: 800, height: 600,
@@ -75,21 +75,21 @@ function create (){
     cursors = this.input.keyboard.createCursorKeys();
 
     speed = Phaser.Math.GetSpeed(300, 1);
-}
-function update (time, delta){ 
-// setting gyroscope update frequency
+
+    // setting gyroscope update frequency
  gyro.frequency = 10;
  // start gyroscope detection
-   gyro.startTracking(
+gyro.startTracking(
 
-(o)=>{g=  o.gamma;
-
+(o)=>{g=o.gamma/20;
+console.log("el valor de gamma es" + " "+g)
 if(g >0)
 {ship.x += speed * delta;}
 else if
 (g<0)
 {ship.x -= speed * delta;}})
-
+}
+function update (time, delta){ 
 
     if (cursors.left.isDown){
         ship.x -= speed * delta;
