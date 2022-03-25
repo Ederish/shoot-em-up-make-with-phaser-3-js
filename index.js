@@ -1,3 +1,8 @@
+// setting gyroscope update frequency
+gyro.frequency = 1000;
+// start gyroscope detection
+gyro.startTracking((o)=>{g=o.gamma*1;N = parseInt(g)})
+
 var config = {
     type: Phaser.AUTO,
     scale:{mode: Phaser.Scale.ENVOLVED,},
@@ -10,6 +15,7 @@ var config = {
     },
     physics:{default:"arcade"}
 };
+var N;
 var bullets;
 var ship;
 var speed;
@@ -72,37 +78,24 @@ function create (){
     ship = this.physics.add.sprite(400, 580, 'ship').setDepth(1)
     .setCollideWorldBounds(true);
 
-    cursors = this.input.keyboard.createCursorKeys();
+    cursors = this.input.keyboard.createCursorKeys();   
 
     speed = Phaser.Math.GetSpeed(300, 1);
-
-    // setting gyroscope update frequency
- gyro.frequency = 10;
- // start gyroscope detection
-gyro.startTracking(
-
-(o)=>{g=o.gamma/20;
-console.log("el valor de gamma es" + " "+g)
-if(g >0)
-{ship.x += speed * delta;}
-else if
-(g<0)
-{ship.x -= speed * delta;}})
 }
-function update (time, delta){ 
+function update (time,delta){ 
 
-    if (cursors.left.isDown){
-        ship.x -= speed * delta;
-    }
-    else if (cursors.right.isDown){
-        ship.x += speed * delta;
-    }
-    if (cursors.space.isDown && time > lastFired){
+if (cursors.left.isDown||N<0){
+    ship.x -= speed * delta;
+}
+else if (cursors.right.isDown||N>0){
+    ship.x += speed * delta;
+}
+if (cursors.space.isDown && time > lastFired){
 
-        var bullet = bullets.get();
-        if (bullet){
+var bullet = bullets.get();
+if (bullet){
 
-            bullet.fire(ship.x, ship.y);
-            lastFired = time + 50;
+bullet.fire(ship.x, ship.y);
+lastFired = time + 50;
 }
 }}
