@@ -1,113 +1,59 @@
-﻿// setting gyroscope update frequency
-gyro.frequency = 1000;
-// start gyroscope detection
-gyro.startTracking((o)=>{g=o.gamma*1;N = parseInt(g)})
+class gameover extends Phaser.Scene { constructor() { super({key: "gameover", active: true});}
+create(){
+this.add.rectangle(400,300,800,600, 0x000);
+this.add.text(100,16,"Game Over",{fontFamily: "Arial Black", fontSize:100,color:"#e50000"}).setStroke('#fff',4)
+this.add.text(400,300,"↻",{fontFamily: "Arial Black", fontSize:70,color:"#e50000"}).setStroke('#fff',4).setInteractive().on('pointerdown',()=>{
+window.location.reload()})
+}}
+class levelUp extends Phaser.Scene { constructor() { super({key: "levelUp", active: true});}
 
-var config = {
-    type: Phaser.AUTO,
-    scale:{mode: Phaser.Scale.ENVOLVED,},
-    width: 800, height: 600,
-    parent: 'container',
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
-    physics:{default:"arcade"}
-};
-var N;
-var g;
-var bg;
-var alien;
-var bullets;
-var ship;
-var speed;
-var lastFired = 0;
-
-var game = new Phaser.Game(config);
-
-function preload (){
-    this.load.image('ship','http://examples.phaser.io/assets/sprites/thrust_ship2.png');
-    this.load.image('enemy','http://examples.phaser.io/assets/sprites/ufo.png');
-    this.load.image('bullet','http://examples.phaser.io/assets/misc/bullet0.png');
-    this.load.image('bg','https://phaser.io/images/bg-body4.jpg');
+preload(){
+this.load.image('stick','assets/stick.png');
+this.load.image('bloc','assets/bloc.png');
+this.load.audio('coin','assets/coin.wav');
 }
-function create(){
+create(){
+this.add.rectangle(400,300, 800, 600, 0x10e9c3)    
+this.add.image(400,300,'stick');
 
-bg=this.add.tileSprite(400,300,0,0,'bg').setScrollFactor(0).setDisplaySize(800,600);
-    var Bullet = new Phaser.Class({
+const group = this.add.group({
+setScale: { x:0.3, y:0.3},
+key: 'bloc', frameQuantity:4,
+frame: [0,1,2]
+});
+var blocks= group.getChildren();
 
-        Extends: Phaser.GameObjects.Image,
+Phaser.Actions.GridAlign(blocks, {
+width:4,height:3,x:70,y:40,
+cellWidth:125, cellHeight:125,
+}); 
+for(let block of blocks){
+block.setInteractive().on('pointerdown',()=>{
+block.destroy(),this.sound.add('coin').play();
+this.input.activePointer.isDown= false;
 
-        initialize:
+setTimeout(()=>{
+this.scene.sendToBack()
+pre.setAlpha(1);
+btn1.setAlpha(1);
+btn2.setAlpha(1);
+btn3.setAlpha(1);
+btn4.setAlpha(1);
+timedEvent.start();
+this.scene.play()
+},1000)})
+}}}
+class winner extends Phaser.Scene { constructor() { super({key: "winner", active: true});}
+ preload (){
+this.load.image('coins', 'assets/coin.png');
+this.load.audio('coin','assets/coin.png')
+} 
+create (){
+this.add.rectangle(400,300,800,600, 0xa10897);
+this.add.text(100,16,"You Winner",{fontFamily:"Arial Black", fontSize:100,color:"#efb810"}).setStroke('#fff',8)
+audio.pause()
 
-        function Bullet (scene){
-            Phaser.GameObjects.Image.call(this, scene, 0, -4, 'bullet');
-
-            this.speed = Phaser.Math.GetSpeed(450, 1);
-        },
-
-        fire: function (x, y){
-            this.setPosition(x, y - 10);
-
-            this.setActive(true);
-            this.setVisible(true);
-        },
-        update: function (time, delta){
-            this.y -= this.speed * delta;
-            
-            if (this.y < -25){
-                this.setActive(false);
-                this.setVisible(false);
-            }}
-
-    });
-    bullets = this.add.group({
-        classType: Bullet,
-        maxSize: 20,
-        runChildUpdate: true
-    });
-    //  Create the objects in advance, so they're ready and waiting in the pool
-bullets.createMultiple({ quantity: 20, active: false });
-
-    ship = this.physics.add.sprite(400, 580,'ship').setDepth(1).setCollideWorldBounds(true);
-   
-    cursors = this.input.keyboard.createCursorKeys();   
-    speed = Phaser.Math.GetSpeed(450,1);
-    
-    this.time.addEvent({ delay: 1000, callback: enemy, callbackScope: this, loop: true });
-
-    function enemy(){
-        var group = this.physics.add.group({
-        key: 'enemy',
-        frameQuantity: 8,
-        gridAlign: {
-        x: 25, y: 25,
-        width: 1, height: 12,
-        cellWidth: 50,cellHeight: 50
-        },
-        bounceX: 1,
-        collideWorldBounds: true
-    });
-    group.setVelocityX(200, 10);}
-}
-function update (time,delta){ 
-    bg.tilePositionY -= +5;
-    
-    if (cursors.left.isDown||N<-20){
-        ship.x -= speed * delta;
-    }
-    else if (cursors.right.isDown||N>20){
-        ship.x += speed * delta;
-    }
-    if(cursors.space.isDown&&time>lastFired||this.input.activePointer.isDown&&time>lastFired){
-    
-    var bullet = bullets.get();
-    if (bullet){
-    
-    bullet.fire(ship.x, ship.y);
-    lastFired = time + 50;
-    }
-    }else if(N >-20 && N<20){
-    ship.setVelocityX(0);
-    }}
+for (var i = 0; i < 64; i++){
+this.physics.add.image(Phaser.Math.Between(0,800),Phaser.Math.Between(0,600),'coins')
+.setGravityY(600).setDisplaySize(40,40).setCollideWorldBounds(true).setBounce(1);
+}}}
